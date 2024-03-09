@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 """
-A module containing the definition for the base class that defines all common attributes/methods for other classes
+A module containing the definition for the base class that
+defines all common attributes/methods for other classes
 """
 import uuid
 from datetime import datetime
@@ -9,19 +10,19 @@ from .__init__ import storage
 
 
 class BaseModel:
-    """The base class that contains all common attributes/methods for other classes"""
+    """The base class that contains all common
+    attributes/methods for other classes"""
     def __init__(self, *args, **kwargs):
         """The initialization method for new instances"""
         if kwargs:
-            for key,value in kwargs.items():
+            for key, value in kwargs.items():
                 if key == "__class__":
                     continue
                 if key == "created_at" or key == "updated_at":
-                    setattr(self, key, datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f"))
-                    #self.key = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                    setattr(self, key, datetime.strptime
+                            (value, "%Y-%m-%dT%H:%M:%S.%f"))
                 else:
                     setattr(self, key, value)
-                    #self.key = value
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
@@ -30,7 +31,8 @@ class BaseModel:
 
     def __str__(self):
         """The custom __str__ called upon using the print() function"""
-        return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
+        return "[{}] ({}) {}".format(self.__class__.__name__, self.id,
+                                     self.__dict__)
 
     def save(self):
         """The save function that saves to a file"""
