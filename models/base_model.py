@@ -1,28 +1,31 @@
 #!/usr/bin/python3
+"""This script is the base model"""
 
-"""
-A module containing the definition for the base class that
-defines all common attributes/methods for other classes
-"""
 import uuid
 from datetime import datetime
-from .__init__ import storage
+from models import storage
 
 
 class BaseModel:
-    """The base class that contains all common
-    attributes/methods for other classes"""
+    """Class from which all other classes will inherit"""
+
     def __init__(self, *args, **kwargs):
-        """The initialization method for new instances"""
-        if kwargs:
-            for key, value in kwargs.items():
-                if key == "__class__":
-                    continue
-                if key == "created_at" or key == "updated_at":
-                    setattr(self, key, datetime.strptime
-                            (value, "%Y-%m-%dT%H:%M:%S.%f"))
+
+        """Initialization of  instance attributes
+            - *args: list of arguments
+            - **kwargs: dict of key-values arguments
+        """
+
+        if kwargs is not None and kwargs != {}:
+            for key in kwargs:
+                if key == "created_at":
+                    self.__dict__["created_at"] = datetime.strptime(
+                        kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
+                elif key == "updated_at":
+                    self.__dict__["updated_at"] = datetime.strptime(
+                        kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f")
                 else:
-                    setattr(self, key, value)
+                    self.__dict__[key] = kwargs[key]
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
@@ -30,24 +33,20 @@ class BaseModel:
             storage.new(self)
 
     def __str__(self):
-        """The custom __str__ called upon using the print() function"""
-        return "[{}] ({}) {}".format(self.__class__.__name__, self.id,
-                                     self.__dict__)
+        """Returns the string representation"""
+        return "[{}] ({}) {}".\
+            format(type(self).__name__, self.id, self.__dict__)
 
     def save(self):
-        """The save function that saves to a file"""
+        """updates the public instance attribute updated_at"""
         self.updated_at = datetime.now()
-        storage.update(self)
         storage.save()
 
     def to_dict(self):
-        """A function that customizes the output of __dict__ attribute"""
-        custom_dictionary = {}
-        for key, value in self.__dict__.items():
-            if value is None:
-                continue
-            if key == "created_at" or key == "updated_at":
-                value = value.isoformat()
-            custom_dictionary[key] = value
-        custom_dictionary["__class__"] = self.__class__.__name__
-        return custom_dictionary
+        """returns a dictionary containing all keys/values of __dict__"""
+
+        my_dict = self.__dict__.copy()
+        my_dict["__class__"] = type(self).__name__
+        my_dict["created_at"] = my_dict["created_at"].isoformat()
+        my_dict["updated_at"] = my_dict["updated_at"].isoformat()
+        return my_dict
