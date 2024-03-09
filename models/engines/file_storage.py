@@ -24,7 +24,10 @@ class FileStorage:
         """DEserializes the JSON file to __objects only if it exists"""
         if os.path.exists(FileStorage.__file_path):
             with open(FileStorage.__file_path, "r") as json_file:
-                FileStorage.__objects = json.load(json_file)
+                try:
+                    FileStorage.__objects = json.load(json_file)
+                except:
+                    pass
                 """
                 full_list = json_file.read()
                 json_objs = full_list.split(', "BaseModel.')

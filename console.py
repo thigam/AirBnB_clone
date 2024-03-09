@@ -4,6 +4,7 @@
 import cmd
 from models.base_model import BaseModel
 from models.engines.file_storage import FileStorage
+from models.__init__ import storage
 
 class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb)'
@@ -33,16 +34,17 @@ class HBNBCommand(cmd.Cmd):
 
     def do_show(self, line):
         """Prints the string representation of an instance based on the class name and id"""
-        args = line.split(" ")
-        if not line.strip():
+        args = line.split()
+        if not args:
             print("** class name missing **")
         elif len(args) == 1:
             print("** instance id missing **")
         elif args[0] != "BaseModel":
             print("** class doesn't exist **")
         else:
+            key = "{}.{}".format(args[0], args[1])
             try:
-                print(FileStorage.__objects[args[0], args[1]])
+                print(storage.all()[key])
             except:
                 print("** no instance found **")
 
@@ -56,21 +58,24 @@ class HBNBCommand(cmd.Cmd):
         elif args[0] != "BaseModel":
             print("** class doesn't exist **")
         else:
+            key = "{}.{}".format(args[0], args[1])
             try:
-                del FileStorage.__objects[args[0], args[1]]
+                del storage.all()[key]
+                storage.save()
             except:
                 print("** no instance found **")
 
     def do_all(self, line):
         """Prints all string representation of all instance based or not on the class name"""
         args = line.split(" ")
+        all_objs = storage.all()
         if not line.strip():
-            for key, value in FileStorage.__objects:
-                print(FileStorage.__objects[key])
+            for key, value in all_objs.items():
+                print(all_objs[key])
         elif args[0] == "BaseModel":
-            for key, value in FileStorage.__objects:
+            for key, value in all_objs.items():
                 if "BaseModel" in key:
-                    print(FileStorage.__objects[key])
+                    print(all_objs[key])
         else:
             print("** class doesn't exist **")
 
@@ -88,9 +93,15 @@ class HBNBCommand(cmd.Cmd):
         elif len(args) == 3:
             print("** value missing **")
         else:
+            key = "{}.{}".format(args[0], args[1])
+            object_inst = storage.all()[key]
+            new = BaseModel(**object_inst)
             try:
-                FileStorage.__objects[args[0], args[1]].args[2] = args[3]
-            except:
+                setattr(new, args[2], args[3])
+                del object_inst
+                storage.new(new)
+                storage.save()
+            except KeyError:
                 print("** no instance found **")
 
 if __name__ == '__main__':
