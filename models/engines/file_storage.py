@@ -4,7 +4,7 @@ import json
 
 class FileStorage:
     """Deals with the storage of dictionary representations of baseModel objects in a json file"""
-    __file_path = "models/file.json"
+    __file_path = "file.json"
     __objects = {}
 
     def all(self):
