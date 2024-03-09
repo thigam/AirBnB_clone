@@ -2,6 +2,7 @@
 """Contains the definition for a class User that inherits from BaseModel"""
 from .base_model import BaseModel
 
+
 class Place(BaseModel):
     """Holds a description of the place including specific details"""
     city_id = ""
