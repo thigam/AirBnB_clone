@@ -35,6 +35,7 @@ class BaseModel:
     def save(self):
         """The save function that saves to a file"""
         self.updated_at = datetime.now()
+        storage.update(self)
         storage.save()
 
     def to_dict(self):

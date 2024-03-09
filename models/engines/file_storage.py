@@ -20,6 +20,11 @@ class FileStorage:
         with open(FileStorage.__file_path, "w") as json_file:
             json.dump(FileStorage.__objects, json_file)
 
+    def update(self, obj):
+        """Updates the objects in __objects before the save method of FileStorage is called"""
+        if obj.__class__.__name__ == "User":
+            FileStorage.__objects["{}.{}".format(obj.__class__.__name__, obj.id)] = obj.to_dict()
+
     def reload(self):
         """DEserializes the JSON file to __objects only if it exists"""
         if os.path.exists(FileStorage.__file_path):

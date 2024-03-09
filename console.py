@@ -5,12 +5,20 @@ import cmd
 from models.base_model import BaseModel
 from models.engines.file_storage import FileStorage
 from models.__init__ import storage
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb)'
+    classes = ["BaseModel", "User", "Place", "State", "City", "Amenity", "Review"]
 
     def do_quit(self, line):
         """Quit command to exit the program"""
+        storage.save()
         return True
 
     def emptyline(self):
@@ -19,16 +27,31 @@ class HBNBCommand(cmd.Cmd):
 
     def do_EOF(self, line):
         """Quit command to exit the program"""
+        storage.save()
         return True
 
     def do_create(self, line):
         """Creates a new instance of BaseModel, saves it to the JSON file and prints the id"""
-        if not line.strip():
+        cls = line.strip()
+        if not cls:
             print("** class name is missing **")
-        elif line.strip() != "BaseModel":
+        elif cls not in HBNBCommand.classes:
             print("** class doesn't exist **")
         else:
-            new = BaseModel()
+            if cls == "BaseModel":
+                new = BaseModel()
+            elif cls == "User":
+                new = User()
+            elif cls == "Place":
+                new = Place()
+            elif cls == "State":
+                new = State()
+            elif cls == "City":
+                new = City()
+            elif cls == "Amenity":
+                new = Amenity()
+            elif cls == "Review":
+                new = Review()
             new.save()
             print(new.id)
 
@@ -39,7 +62,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
         elif len(args) == 1:
             print("** instance id missing **")
-        elif args[0] != "BaseModel":
+        elif args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
         else:
             key = "{}.{}".format(args[0], args[1])
@@ -55,7 +78,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
         elif len(args) == 1:
             print("** instance id missing **")
-        elif args[0] != "BaseModel":
+        elif args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
         else:
             key = "{}.{}".format(args[0], args[1])
@@ -72,9 +95,9 @@ class HBNBCommand(cmd.Cmd):
         if not line.strip():
             for key, value in all_objs.items():
                 print(all_objs[key])
-        elif args[0] == "BaseModel":
+        elif args[0] in HBNBCommand.classes:
             for key, value in all_objs.items():
-                if "BaseModel" in key:
+                if args[0] in key:
                     print(all_objs[key])
         else:
             print("** class doesn't exist **")
@@ -86,7 +109,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
         elif len(args) == 1:
             print("** instance id missing **")
-        elif args[0] != "BaseModel":
+        elif args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
         elif len(args) == 2:
             print("** attribute name missing **")
@@ -94,15 +117,18 @@ class HBNBCommand(cmd.Cmd):
             print("** value missing **")
         else:
             key = "{}.{}".format(args[0], args[1])
-            object_inst = storage.all()[key]
+            try:
+                object_inst = storage.all()[key]
+                object_inst[args[2]] = args[3]
+            except KeyError:
+                print("** no instance found **")
+            """
             new = BaseModel(**object_inst)
             try:
                 setattr(new, args[2], args[3])
                 del object_inst
                 storage.new(new)
-                storage.save()
-            except KeyError:
-                print("** no instance found **")
+                storage.save()"""
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
