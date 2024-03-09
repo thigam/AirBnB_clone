@@ -1,12 +1,9 @@
 #!/usr/bin/python3
-"""This module creates a Review class"""
-
-from models.base_model import BaseModel
-
+"""Contains the definition for a class User that inherits from BaseModel"""
+from .base_model import BaseModel
 
 class Review(BaseModel):
-    """Class for managing review objects"""
-
+    """A class that gives rise to indivudal reviews about a particular place"""
     place_id = ""
     user_id = ""
     text = ""
