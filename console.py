@@ -3,7 +3,7 @@
 
 import cmd
 from models.base_model import BaseModel
-from models.engines.file_storage import FileStorage
+from models.engine.file_storage import FileStorage
 from models.__init__ import storage
 from models.user import User
 from models.state import State
@@ -12,9 +12,11 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 
+
 class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb)'
-    classes = ["BaseModel", "User", "Place", "State", "City", "Amenity", "Review"]
+    classes = ["BaseModel", "User", "Place",
+               "State", "City", "Amenity", "Review"]
 
     def do_quit(self, line):
         """Quit command to exit the program"""
@@ -31,7 +33,8 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def do_create(self, line):
-        """Creates a new instance of BaseModel, saves it to the JSON file and prints the id"""
+        """Creates a new instance of BaseModel, saves it to
+        the JSON file and prints the id"""
         cls = line.strip()
         if not cls:
             print("** class name is missing **")
@@ -56,7 +59,8 @@ class HBNBCommand(cmd.Cmd):
             print(new.id)
 
     def do_show(self, line):
-        """Prints the string representation of an instance based on the class name and id"""
+        """Prints the string representation of an instance
+        based on the class name and id"""
         args = line.split()
         if not args:
             print("** class name missing **")
@@ -68,11 +72,12 @@ class HBNBCommand(cmd.Cmd):
             key = "{}.{}".format(args[0], args[1])
             try:
                 print(storage.all()[key])
-            except:
+            except KeyError:
                 print("** no instance found **")
 
     def do_destroy(self, line):
-        """Deletes an instance based on the class name and id and saves the change into the JSON file"""
+        """Deletes an instance based on the class name and
+        id and saves the change into the JSON file"""
         args = line.split(" ")
         if not line.strip():
             print("** class name missing **")
@@ -85,11 +90,12 @@ class HBNBCommand(cmd.Cmd):
             try:
                 del storage.all()[key]
                 storage.save()
-            except:
+            except KeyError:
                 print("** no instance found **")
 
     def do_all(self, line):
-        """Prints all string representation of all instance based or not on the class name"""
+        """Prints all string representation of all
+        instance based or not on the class name"""
         args = line.split(" ")
         all_objs = storage.all()
         if not line.strip():
@@ -103,7 +109,8 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
 
     def do_update(self, line):
-        """Updates and instance based on the class name and id by adding or updating attributes and saving them to the JSON file"""
+        """Updates and instance based on the class name and id
+        by adding or updating attributes and saving them to the JSON file"""
         args = line.split(" ")
         if not line.strip():
             print("** class name missing **")
@@ -129,6 +136,7 @@ class HBNBCommand(cmd.Cmd):
                 del object_inst
                 storage.new(new)
                 storage.save()"""
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
